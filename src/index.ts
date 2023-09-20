@@ -15,5 +15,3 @@ const app = new Elysia()
   .listen(PORT)
 
 console.log(`Running API at ${app.server?.hostname}:${app.server?.port}`)
-
-typeof app.ws
