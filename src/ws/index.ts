@@ -1,14 +1,9 @@
-import { Request } from 'express';
-import type ws from 'ws';
-import { startHeartbeat, passedHeartbeat } from './heartbeat';
+import Elysia from "elysia";
 
-export const handle = async (ws: ws, req: Request) => {
-  startHeartbeat(ws, req.ip);
 
-  ws.on('message', (msg) => {
-    // if (msg.action == "heartbeat" && msg.value = "PONG") {
-    //   passedHeartbeat(req.ip);
-    //   return;
-    // }
-  });
-};
+export const websocket = new Elysia()
+  .ws("/ws", {
+    message: (ws, message) => {
+
+    }
+  })
