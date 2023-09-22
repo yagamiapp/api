@@ -1,6 +1,4 @@
 import { Elysia } from 'elysia';
-import { getPartial } from './get_partial';
+import { get } from './get';
 
-export const tournament = new Elysia({ prefix: "/tournaments" })
-  .use(getPartial);
-
+export const tournament = new Elysia({ prefix: '/tournaments' }).use(get);
