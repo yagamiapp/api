@@ -1,9 +1,5 @@
-import Elysia from "elysia";
+import Elysia from 'elysia';
 
-
-export const websocket = new Elysia()
-  .ws("/ws", {
-    message: (ws, message) => {
-
-    }
-  })
+export const websocket = new Elysia().ws('/ws', {
+  message: (ws, message) => {},
+});
