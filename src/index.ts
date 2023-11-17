@@ -1,25 +1,12 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import express from 'express';
+import { Elysia } from 'elysia';
 import { rest } from './rest';
-import expressWs from 'express-ws';
-import { handle } from './ws';
-
-const baseApp = express();
-const { app } = expressWs(baseApp);
-const { PORT } = process.env;
+import { websocket } from './ws';
+const { PORT } = Bun.env;
 
 if (!PORT) {
-  throw 'No PORT Specified in .env file!';
+  throw 'No PORT Specified in env variables!';
 }
 
-// Register rest
-app.use('/', rest);
-// Register websocket
-app.ws('/ws', handle);
+const app = new Elysia().use(rest).use(websocket).listen(PORT);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Connected to http://localhost:${PORT}`);
-});
+console.log(`Running API at ${app.server?.hostname}:${app.server?.port}`);

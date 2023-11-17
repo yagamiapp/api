@@ -1,9 +1,10 @@
-import { Router } from 'express';
-
-import { tournament } from './routers/tournament';
+import Elysia from 'elysia';
+import { tournament } from './tournament';
+import swagger from './docs';
 
 const { DOCS_URL } = process.env;
 
-export const rest = Router()
-  .use('/tournament', tournament)
-  .get('/', (_req, res) => res.redirect(DOCS_URL ?? 'https://clxxiii.dev'));
+export const rest = new Elysia()
+  .use(swagger)
+  .use(tournament)
+  .get('/', ({ set }) => (set.redirect = DOCS_URL), {});

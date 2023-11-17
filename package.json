@@ -2,11 +2,11 @@
   "name": "yagami-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "npx ts-node src/index.ts",
+    "start": "bun src/index.ts",
     "build": "tsc",
-    "dev": "nodemon src/index.ts",
+    "dev": "bun --watch src/index.ts",
     "test": "jest",
     "format": "prettier . --write",
     "studio": "prisma studio",
@@ -21,6 +21,7 @@
     "@types/ws": "^8.5.5",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
+    "bun-types": "^1.0.2",
     "eslint": "^8.48.0",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
@@ -29,8 +30,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@prisma/client": "5.2.0",
+    "@elysiajs/swagger": "^0.7.1",
+    "@prisma/client": "5.3.1",
     "dotenv": "^16.3.1",
+    "elysia": "^0.7.3",
+    "elysia-autoroutes": "^0.2.2",
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
     "prisma": "^5.2.0"
