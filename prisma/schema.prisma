@@ -17,49 +17,49 @@ model Global {
 }
 
 model OsuBadge {
-  id             Int                @id @default(autoincrement())
-  awarded_at     DateTime
-  description    String
-  image_url      String
-  url            String
-  UsersWithBadge UserWithOsuBadge[]
+  id               Int                @id @default(autoincrement())
+  awarded_at       DateTime
+  description      String
+  image_url        String
+  url              String
+  users_with_badge UserWithOsuBadge[]
 }
 
 model UserWithOsuBadge {
-  userId   Int
-  badgeId  Int
-  User     User     @relation(fields: [userId], references: [id])
-  OsuBadge OsuBadge @relation(fields: [badgeId], references: [id])
+  user_id  Int
+  badge_id Int
+  user     User     @relation(fields: [user_id], references: [id])
+  badge    OsuBadge @relation(fields: [badge_id], references: [id])
 
-  @@id([userId, badgeId])
+  @@id([user_id, badge_id])
 }
 
 model CustomBadge {
-  id             Int                   @id @default(autoincrement())
-  awarded_at     DateTime
-  name           String
-  description    String
-  image_url      String
-  url            String
-  UsersWithBadge UserWithCustomBadge[]
+  id               Int                   @id @default(autoincrement())
+  awarded_at       DateTime
+  name             String
+  description      String
+  image_url        String
+  url              String
+  users_with_badge UserWithCustomBadge[]
 }
 
 model UserWithCustomBadge {
-  userId  Int
-  badgeId Int
-  User    User        @relation(fields: [userId], references: [id])
-  Badge   CustomBadge @relation(fields: [badgeId], references: [id])
+  user_id  Int
+  badge_id Int
+  user     User        @relation(fields: [user_id], references: [id])
+  badge    CustomBadge @relation(fields: [badge_id], references: [id])
 
-  @@id([userId, badgeId])
+  @@id([user_id, badge_id])
 }
 
 model UsersHostingTournament {
-  userId  Int
-  tourney Int
-  User    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Tourney Tournament @relation(fields: [tourney], references: [id], onDelete: Cascade)
+  user_id       Int
+  tournament_id Int
+  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
 
-  @@id([userId, tourney])
+  @@id([user_id, tournament_id])
 }
 
 model User {
@@ -77,56 +77,56 @@ model User {
   hit_accuracy   Float
   pp             Float
 
-  OsuToken        OsuOauth?
-  DiscordAccounts DiscordAccount[]
-  TwitchAccounts  TwitchAccount[]
-  InTeams         UserInTeam[]
-  OwnerOfLobby    AutoHostRotate?
-  OsuBadges       UserWithOsuBadge[]
-  Badges          UserWithCustomBadge[]
-  HostOf          UsersHostingTournament[]
-  Sessions        UserSession[]
-  Invites         TeamInvite[]
+  osu_token        OsuOauth?
+  discord_accounts DiscordAccount[]
+  twitch_accounts  TwitchAccount[]
+  in_teams         UserInTeam[]
+  ahr_owner_of     AutoHostRotate?
+  osu_badges       UserWithOsuBadge[]
+  badges           UserWithCustomBadge[]
+  host_of          UsersHostingTournament[]
+  sessions         UserSession[]
+  invites          TeamInvite[]
 }
 
 model DiscordAccount {
-  User          User   @relation(fields: [osuId], references: [id])
-  osuId         Int
+  user          User   @relation(fields: [osu_id], references: [id])
+  osu_id        Int
   id            String @id
   avatar        String
   discriminator String
   flags         Int
   username      String
 
-  DiscordToken DiscordOauth?
+  token DiscordOauth?
 }
 
 model TwitchAccount {
-  User                 User         @relation(fields: [osuId], references: [id])
-  osuId                Int
+  user                 User         @relation(fields: [osu_id], references: [id])
+  osu_id               Int
   id                   Int          @id
   username             String
   requests_enabled     Boolean      @default(false)
   req_require_live     Boolean      @default(false)
   req_require_category Boolean      @default(false)
-  Tournaments          Tournament[]
+  tournaments          Tournament[]
 
-  TwitchToken TwitchOauth?
+  token TwitchOauth?
 }
 
 model OsuOauth {
-  userId        Int      @id
+  user_id       Int      @id
   last_update   DateTime @default(now())
   access_token  String
   expires_in    Int
   refresh_token String
   token_type    String
 
-  User User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 }
 
 model DiscordOauth {
-  userId        String   @id
+  user_id       String   @id
   last_update   DateTime @default(now())
   access_token  String
   expires_in    Int
@@ -134,29 +134,29 @@ model DiscordOauth {
   token_type    String
   scope         String
 
-  User DiscordAccount @relation(fields: [userId], references: [id])
+  user DiscordAccount @relation(fields: [user_id], references: [id])
 }
 
 model TwitchOauth {
-  userId        Int      @id
+  user_id       Int      @id
   last_update   DateTime @default(now())
   access_token  String
   expires_at    BigInt
   refresh_token String
   token_type    String
 
-  User TwitchAccount @relation(fields: [userId], references: [id])
+  user TwitchAccount @relation(fields: [user_id], references: [id])
 }
 
 model UserSession {
-  id        String   @id
-  User      User     @relation(fields: [osuId], references: [id])
-  osuId     Int
-  createdAt DateTime @default(now())
-  lastUsed  DateTime @default(now())
-  device    String?
-  browser   String?
-  os        String?
+  id         String   @id
+  user       User     @relation(fields: [osu_id], references: [id])
+  osu_id     Int
+  created_at DateTime @default(now())
+  last_used  DateTime @default(now())
+  device     String?
+  browser    String?
+  os         String?
 }
 
 model Guild {
@@ -166,7 +166,7 @@ model Guild {
   player_role            String?
   match_results_channel  String?
   manager_admin_disabled Boolean      @default(false)
-  Tournaments            Tournament[]
+  tournaments            Tournament[]
   active_tournament      Int?
 }
 
@@ -185,27 +185,27 @@ model Tournament {
   x_v_x_mode          Int
   allow_registrations Boolean
   rounds              Round[]
-  Guild               Guild?   @relation(fields: [Guild_id], references: [guild_id])
-  Guild_id            String?
+  guild               Guild?   @relation(fields: [guild_id], references: [guild_id])
+  guild_id            String?
   delete_warning      Boolean?
   fm_mods             Int      @default(1) // How many mods are required for freemod picks
   double_pick         Int      @default(1) // 0: No double picking; 1: Only double picking NM; 2 Double picking allowed
   double_ban          Int      @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
   private             Boolean  @default(false)
-  Teams               Team[]
+  teams               Team[]
 
-  twitchAccountId Int?
-  TwitchChannel   TwitchAccount?           @relation(fields: [twitchAccountId], references: [id])
-  ModMultipliers  ModMultiplier[]
-  Hosts           UsersHostingTournament[]
+  twitch_account_id Int?
+  twitch_channel    TwitchAccount?           @relation(fields: [twitch_account_id], references: [id])
+  mod_multipliers   ModMultiplier[]
+  hosts             UsersHostingTournament[]
 }
 
 model ModMultiplier {
   id            Int        @id @default(autoincrement())
-  Tournament    Tournament @relation(fields: [tournament_id], references: [id])
+  tournament    Tournament @relation(fields: [tournament_id], references: [id])
   tournament_id Int
-  modString     String
-  matchExactly  Boolean    @default(false)
+  mod_string    String
+  match_exactly Boolean    @default(false)
   multiplier    Float
 }
 
@@ -217,19 +217,19 @@ model Round {
   best_of        Int
   delete_warning String?
   show_mappool   Boolean
-  Match          Match[]
-  Tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId   Int
-  mappool        Mappool?   @relation(fields: [mappoolId], references: [id])
-  mappoolId      Int?       @unique
+  match          Match[]
+  tournament     Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  tournament_id  Int
+  mappool        Mappool?   @relation(fields: [mappool_id], references: [id])
+  mappool_id     Int?       @unique
 }
 
 model Mappool {
   id        Int             @id @default(autoincrement())
-  Maps      MapInPool[]
+  maps      MapInPool[]
   global    Boolean         @default(false)
-  Round     Round?
-  Qualifier QualifierRound?
+  round     Round?
+  qualifier QualifierRound?
 
   tournament_name      String?
   tournament_acronym   String?
@@ -239,25 +239,25 @@ model Mappool {
 }
 
 model TeamInvite {
-  inviteeUserId Int
-  Invitee       User @relation(fields: [inviteeUserId], references: [id])
-  teamId        Int
-  Team          Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  invitee_user_id Int
+  invitee         User @relation(fields: [invitee_user_id], references: [id])
+  team_id         Int
+  team            Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
 
-  @@id([inviteeUserId, teamId])
+  @@id([invitee_user_id, team_id])
 }
 
 model MapInPool {
-  identifier  String // NM1, NM2 etc.
-  mods        String
-  Map         Map?         @relation(fields: [mapId], references: [beatmap_id])
-  mapId       String?
-  modPriority Int          @default(0)
-  Mappool     Mappool      @relation(fields: [mappoolId], references: [id], onDelete: Cascade)
-  mappoolId   Int
-  InMatches   MapInMatch[]
+  identifier   String // NM1, NM2 etc.
+  mods         String
+  data         Map?         @relation(fields: [map_id], references: [beatmap_id])
+  map_id       String?
+  mod_priority Int          @default(0)
+  mappool      Mappool      @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
+  mappool_id   Int
+  in_matches   MapInMatch[]
 
-  @@id([identifier, mappoolId])
+  @@id([identifier, mappool_id])
 }
 
 model Map {
@@ -304,62 +304,62 @@ model Map {
   total_length         String?
   version              String?
   video                String?
-  InPools              MapInPool[]
+  in_pools             MapInPool[]
 }
 
 model Team {
-  id               Int                    @id @default(autoincrement())
-  name             String
-  icon_url         String
-  color            String
-  Members          UserInTeam[]
-  Tournament       Tournament             @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  tournamentId     Int
-  scrim            Boolean                @default(false)
-  InBracketMatches TeamInMatch[]
-  InQualifiers     TeamInQualifierMatch[]
-  InvitedUsers     TeamInvite[]
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  icon_url             String
+  color                String
+  members              UserInTeam[]
+  tournament           Tournament             @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  tournament_id        Int
+  scrim                Boolean                @default(false)
+  in_matches           TeamInMatch[]
+  in_qualifier_matches TeamInQualifierMatch[]
+  invited_users        TeamInvite[]
 }
 
 model UserInTeam {
-  osuId          Int
-  User           User     @relation(fields: [osuId], references: [id])
-  Team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId         Int
+  osu_id         Int
+  user           User     @relation(fields: [osu_id], references: [id])
+  team           Team     @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  team_id        Int
   member_order   Int      @default(0)
   delete_warning Boolean?
 
-  @@id([osuId, teamId])
+  @@id([osu_id, team_id])
 }
 
 model Match {
-  id            Int            @id @default(autoincrement())
-  Teams         TeamInMatch[]
-  start_time    DateTime?
-  message_id    String?
-  channel_id    String?
-  mp_link       String?
-  waiting_on    Int? // Index of team in teams array
-  Round         Round?         @relation(fields: [roundId], references: [id])
-  roundId       Int?
-  ScrimSettings ScrimSettings?
-  MapsInMatch   MapInMatch[]
-  state         Int
-  scrim         Boolean        @default(false)
+  id          Int            @id @default(autoincrement())
+  teams       TeamInMatch[]
+  start_time  DateTime?
+  message_id  String?
+  channel_id  String?
+  mp_link     String?
+  waiting_on  Int? // Index of team in teams array
+  round       Round?         @relation(fields: [round_id], references: [id])
+  round_id    Int?
+  settings    ScrimSettings?
+  map_history MapInMatch[]
+  state       Int
+  scrim       Boolean        @default(false)
 }
 
 model ScrimSettings {
-  matchId Int   @id
-  Match   Match @relation(fields: [matchId], references: [id])
-  bans    Int
-  best_of Int
+  match_id Int   @id
+  match    Match @relation(fields: [match_id], references: [id])
+  bans     Int
+  best_of  Int
 }
 
 model TeamInMatch {
-  matchId    Int
-  teamId     Int
-  Match      Match        @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  Team       Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  match_id   Int
+  team_id    Int
+  match      Match        @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  team       Team         @relation(fields: [team_id], references: [id], onDelete: Cascade)
   score      Int
   roll       Int?
   pick_order Int?
@@ -367,78 +367,77 @@ model TeamInMatch {
   aborts     Int          @default(0)
   faults     Int          @default(0)
   warmed_up  Boolean      @default(false)
-  Bans       MapInMatch[] @relation("banned")
-  Wins       MapInMatch[] @relation("won")
-  Picks      MapInMatch[] @relation("picked")
+  bans       MapInMatch[] @relation("banned")
+  wins       MapInMatch[] @relation("won")
+  picks      MapInMatch[] @relation("picked")
   winner     Boolean?
 
-  @@id([teamId, matchId])
+  @@id([team_id, match_id])
 }
 
 model MapInMatch {
-  Map           MapInPool @relation(fields: [mapIdentifier, poolId], references: [identifier, mappoolId], onDelete: Cascade)
-  Match         Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  matchId       Int
-  mapIdentifier String
-  poolId        Int
+  map            MapInPool @relation(fields: [map_identifier, pool_id], references: [identifier, mappool_id], onDelete: Cascade)
+  match          Match     @relation(fields: [match_id], references: [id], onDelete: Cascade)
+  match_id       Int
+  map_identifier String
+  pool_id        Int
 
-  BannedByTeam    TeamInMatch? @relation(fields: [bannedByMatchId, bannedByTeamId], references: [matchId, teamId], name: "banned")
-  bannedByTeamId  Int?
-  bannedByMatchId Int?
-  PickedByTeam    TeamInMatch? @relation(fields: [pickedByMatchId, pickedByTeamId], references: [matchId, teamId], name: "picked")
-  pickedByTeamId  Int?
-  pickedByMatchId Int?
-  pickNumber      Int?
-  pickTeamNumber  Int?
-  WonBy           TeamInMatch? @relation(fields: [wonByMatchId, wonByTeamId], references: [matchId, teamId], name: "won")
-  wonByTeamId     Int?
-  wonByMatchId    Int?
+  banned_by    TeamInMatch? @relation(fields: [match_id, banned_by_id], references: [match_id, team_id], name: "banned")
+  banned_by_id Int?
 
-  @@id([mapIdentifier, matchId])
+  picked_by        TeamInMatch? @relation(fields: [match_id, picked_by_id], references: [match_id, team_id], name: "picked")
+  picked_by_id     Int?
+  pick_number      Int?
+  pick_team_number Int?
+
+  won_by    TeamInMatch? @relation(fields: [match_id, won_by_id], references: [match_id, team_id], name: "won")
+  won_by_id Int?
+
+  @@id([map_identifier, match_id])
 }
 
 model QualifierRound {
-  id        Int     @id @default(autoincrement())
-  Mappool   Mappool @relation(fields: [mappoolId], references: [id])
-  mappoolId Int     @unique
+  id         Int     @id @default(autoincrement())
+  mappool    Mappool @relation(fields: [mappool_id], references: [id])
+  mappool_id Int     @unique
 }
 
 model QualifierMatch {
   id        Int                    @id @default(autoincrement())
-  Teams     TeamInQualifierMatch[]
+  teams     TeamInQualifierMatch[]
   map_index Int                    @default(0)
 }
 
 model TeamInQualifierMatch {
-  Team    Team           @relation(fields: [teamId], references: [id])
-  teamId  Int
-  Match   QualifierMatch @relation(fields: [matchId], references: [id])
-  matchId Int
+  team     Team           @relation(fields: [team_id], references: [id])
+  team_id  Int
+  match    QualifierMatch @relation(fields: [match_id], references: [id])
+  match_id Int
 
-  @@id([teamId, matchId])
+  @@id([team_id, match_id])
 }
 
 model AutoHostRotate {
-  Owner   User   @relation(fields: [osuId], references: [id])
-  osuId   Int    @id
+  owner   User   @relation(fields: [osu_id], references: [id])
+  osu_id  Int    @id
   mp_link String
 
-  min_stars     Float?
-  max_stars     Float?
-  min_length    Int?
-  max_length    Int?
-  min_rank      Int?
-  max_rank      Int?
-  PlayerOrder   AutoHostRotatePlayer[] @relation("queue")
-  CurrentHost   AutoHostRotatePlayer?  @relation("current", fields: [currentHostId], references: [id])
-  currentHostId Int?                   @unique
+  min_stars       Float?
+  max_stars       Float?
+  min_length      Int?
+  max_length      Int?
+  min_rank        Int?
+  max_rank        Int?
+  player_order    AutoHostRotatePlayer[] @relation("queue")
+  current_host    AutoHostRotatePlayer?  @relation("current", fields: [current_host_id], references: [id])
+  current_host_id Int?                   @unique
 }
 
 model AutoHostRotatePlayer {
   id       Int             @id
   username String
   rank     Int
-  lobbyId  Int
-  InLobby  AutoHostRotate  @relation("queue", fields: [lobbyId], references: [osuId], onDelete: Cascade)
-  HostIn   AutoHostRotate? @relation("current")
+  lobby_id Int
+  in_lobby AutoHostRotate  @relation("queue", fields: [lobby_id], references: [osu_id], onDelete: Cascade)
+  host_in  AutoHostRotate? @relation("current")
 }
