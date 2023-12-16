@@ -206,25 +206,34 @@ Table Round {
   bans Int [not null]
   best_of Int [not null]
   delete_warning String
-  show_mappool Boolean [not null]
-  match Match [not null]
+  matches Match [not null]
   tournament Tournament [not null]
   tournament_id Int [not null]
-  mappool Mappool
-  mappool_id Int [unique]
+  mappool_in_rounds MappoolInRound [not null]
+  mappools Mappool [not null]
+}
+
+Table MappoolInRound {
+  round Round [not null]
+  round_id Int [not null]
+  mappool Mappool [not null]
+  mappool_id Int [not null]
+
+  indexes {
+    (round_id, mappool_id) [pk]
+  }
 }
 
 Table Mappool {
   id Int [pk, increment]
+  name String [not null]
+  description String
   maps MapInPool [not null]
   global Boolean [not null, default: false]
-  round Round
+  public Boolean [not null, default: false]
   qualifier QualifierRound
-  tournament_name String
-  tournament_acronym String
-  tournament_iteration String
-  round_name String
-  round_acronym String
+  mappools_in_rounds MappoolInRound [not null]
+  rounds Round [not null]
 }
 
 Table TeamInvite {
@@ -471,7 +480,9 @@ Ref: ModMultiplier.tournament_id > Tournament.id
 
 Ref: Round.tournament_id > Tournament.id [delete: Cascade]
 
-Ref: Round.mappool_id - Mappool.id
+Ref: MappoolInRound.round_id > Round.id [delete: Cascade]
+
+Ref: MappoolInRound.mappool_id > Mappool.id [delete: Cascade]
 
 Ref: TeamInvite.invitee_user_id > User.id
 

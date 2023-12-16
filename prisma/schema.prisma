@@ -6,6 +6,10 @@ generator client {
   binaryTargets = ["native", "linux-musl"]
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -216,26 +220,34 @@ model Round {
   bans           Int
   best_of        Int
   delete_warning String?
-  show_mappool   Boolean
-  match          Match[]
+  matches        Match[]
   tournament     Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   tournament_id  Int
-  mappool        Mappool?   @relation(fields: [mappool_id], references: [id])
-  mappool_id     Int?       @unique
+
+  mappool_in_rounds MappoolInRound[]
+  mappools       Mappool[]
+}
+
+model MappoolInRound {
+  round     Round           @relation(fields: [round_id], references: [id], onDelete: Cascade)
+  round_id  Int
+  mappool   Mappool         @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
+  mappool_id Int
+
+  @@id([round_id, mappool_id])
 }
 
 model Mappool {
   id        Int             @id @default(autoincrement())
+  name      String
+  description String?
   maps      MapInPool[]
   global    Boolean         @default(false)
-  round     Round?
+  public    Boolean         @default(false)
   qualifier QualifierRound?
 
-  tournament_name      String?
-  tournament_acronym   String?
-  tournament_iteration String?
-  round_name           String?
-  round_acronym        String?
+  mappools_in_rounds MappoolInRound[]
+  rounds    Round[]
 }
 
 model TeamInvite {
