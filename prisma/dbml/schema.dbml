@@ -228,7 +228,8 @@ Table Mappool {
   id Int [pk, increment]
   name String [not null]
   description String
-  maps MapInPool [not null]
+  map_in_pools MapInPool [not null]
+  maps Map [not null]
   global Boolean [not null, default: false]
   public Boolean [not null, default: false]
   qualifier QualifierRound
@@ -251,7 +252,7 @@ Table MapInPool {
   identifier String [not null]
   mods String [not null]
   data Map
-  map_id String
+  map_id Int
   mod_priority Int [not null, default: 0]
   mappool Mappool [not null]
   mappool_id Int [not null]
@@ -263,50 +264,47 @@ Table MapInPool {
 }
 
 Table Map {
-  beatmap_id String [pk]
+  id Int [pk]
+  beatmapset_id Int [not null]
+  star_rating Float [not null]
+  status String [not null]
+  total_length Int [not null]
+  diff_mapper_user_id Int [not null]
+  difficulty_name String [not null]
+  max_combo Int [not null]
+  aim_difficulty Float [not null]
+  approach_rate Float [not null]
+  flashlight_difficulty Float [not null]
+  overall_difficulty Float [not null]
+  slider_factor Float [not null]
+  speed_difficulty Float [not null]
+  bpm Float [not null]
+  count_circles Int [not null]
+  count_sliders Int [not null]
+  count_spinners Int [not null]
+  circle_size Float [not null]
+  hp_drain Float [not null]
+  hit_length Int [not null]
+  last_updated DateTime [not null]
+  url String [not null]
+  artist String [not null]
+  artist_unicode String [not null]
+  cover_url String [not null]
+  cover_2x_url String [not null]
+  card_url String [not null]
+  card_2x_url String [not null]
+  list_url String [not null]
+  list_2x_url String [not null]
+  slim_cover_url String [not null]
+  slim_cover_2x_url String [not null]
+  preview_url String [not null]
+  title String [not null]
+  title_unicode String [not null]
+  set_mapper_user_id Int [not null]
+  available Boolean [not null]
   fetch_time DateTime [default: `now()`, not null]
-  approved String
-  approved_date DateTime
-  artist String
-  artist_unicode String
-  audio_unavailable String
-  beatmapset_id String
-  bpm String
-  count_normal String
-  count_slider String
-  count_spinner String
-  creator String
-  creator_id String
-  diff_aim String
-  diff_speed String
-  diff_approach String
-  diff_drain String
-  diff_overall String
-  diff_size String
-  difficultyrating String
-  download_unavailable String
-  favourite_count String
-  file_md5 String
-  genre_id String
-  hit_length String
-  language_id String
-  last_update DateTime
-  max_combo String
-  mode String
-  packs String
-  passcount String
-  playcount String
-  rating String
-  source String
-  storyboard String
-  submit_date DateTime
-  tags String
-  title String
-  title_unicode String
-  total_length String
-  version String
-  video String
   in_pools MapInPool [not null]
+  mappools Mappool [not null]
 }
 
 Table Team {
@@ -488,7 +486,7 @@ Ref: TeamInvite.invitee_user_id > User.id
 
 Ref: TeamInvite.team_id > Team.id [delete: Cascade]
 
-Ref: MapInPool.map_id > Map.beatmap_id
+Ref: MapInPool.map_id > Map.id
 
 Ref: MapInPool.mappool_id > Mappool.id [delete: Cascade]
 

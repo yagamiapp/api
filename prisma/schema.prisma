@@ -241,7 +241,8 @@ model Mappool {
   id        Int             @id @default(autoincrement())
   name      String
   description String?
-  maps      MapInPool[]
+  map_in_pools MapInPool[]
+  maps      Map[]
   global    Boolean         @default(false)
   public    Boolean         @default(false)
   qualifier QualifierRound?
@@ -262,8 +263,8 @@ model TeamInvite {
 model MapInPool {
   identifier   String // NM1, NM2 etc.
   mods         String
-  data         Map?         @relation(fields: [map_id], references: [beatmap_id])
-  map_id       String?
+  data         Map?         @relation(fields: [map_id], references: [id])
+  map_id       Int?
   mod_priority Int          @default(0)
   mappool      Mappool      @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
   mappool_id   Int
@@ -272,51 +273,62 @@ model MapInPool {
   @@id([identifier, mappool_id])
 }
 
+// New and improved and now based on osu!api v2
+// osu!standard only
 model Map {
-  beatmap_id           String      @id
-  fetch_time           DateTime    @default(now())
-  approved             String?
-  approved_date        DateTime?
-  artist               String?
-  artist_unicode       String?
-  audio_unavailable    String?
-  beatmapset_id        String?
-  bpm                  String?
-  count_normal         String?
-  count_slider         String?
-  count_spinner        String?
-  creator              String?
-  creator_id           String?
-  diff_aim             String?
-  diff_speed           String?
-  diff_approach        String?
-  diff_drain           String?
-  diff_overall         String?
-  diff_size            String?
-  difficultyrating     String?
-  download_unavailable String?
-  favourite_count      String?
-  file_md5             String?
-  genre_id             String?
-  hit_length           String?
-  language_id          String?
-  last_update          DateTime?
-  max_combo            String?
-  mode                 String?
-  packs                String?
-  passcount            String?
-  playcount            String?
-  rating               String?
-  source               String?
-  storyboard           String?
-  submit_date          DateTime?
-  tags                 String?
-  title                String?
-  title_unicode        String?
-  total_length         String?
-  version              String?
-  video                String?
-  in_pools             MapInPool[]
+  // Beatmap attributes
+  id                  Int         @id
+  beatmapset_id       Int
+  star_rating         Float //'difficulty_rating'
+  status              String
+  total_length        Int
+  diff_mapper_user_id Int //'user_id'
+  difficulty_name     String //'version'
+  max_combo           Int
+
+  // BeatmapDifficultyAttributes attributes
+  aim_difficulty      Float
+  approach_rate       Float
+  flashlight_difficulty Float
+  overall_difficulty  Float
+  slider_factor       Float
+  speed_difficulty    Float
+
+  // BeatmapExtended attributes
+  bpm                 Float
+  count_circles       Int
+  count_sliders       Int
+  count_spinners      Int
+  circle_size         Float //'cs', changed it to be consistent with the other attributes
+  hp_drain            Float //'drain'
+  hit_length          Int //same as drain time (I think??)
+  last_updated        DateTime
+  url                 String
+
+  // Beatmapset attributes
+  artist              String
+  artist_unicode      String
+  cover_url           String //Cover art: 'cover.cover'
+  cover_2x_url        String //'cover.cover@2x'
+  card_url            String //'cover.card'
+  card_2x_url         String //'cover.card@2x'
+  list_url            String //'cover.list'
+  list_2x_url         String //'cover.list@2x'
+  slim_cover_url      String //'cover.slimcover'
+  slim_cover_2x_url   String //'cover.slimcover@2x'
+  preview_url         String //the song preview
+  title               String
+  title_unicode       String
+  set_mapper_user_id  Int //'user_id'
+
+  // BeatmapsetExtended attributes
+  available           Boolean
+  // ^ true if 'availability.download_disabled' is false and 'deleted_at' is null
+
+  // Other
+  fetch_time          DateTime    @default(now())
+  in_pools            MapInPool[]
+  mappools            Mappool[]
 }
 
 model Team {
