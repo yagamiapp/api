@@ -217,6 +217,7 @@ model Round {
   id             Int        @id @default(autoincrement())
   acronym        String
   name           String
+  is_qualifier   Boolean    @default(false)
   bans           Int
   best_of        Int
   delete_warning String?
@@ -226,6 +227,7 @@ model Round {
 
   mappool_in_rounds MappoolInRound[]
   mappools       Mappool[]
+
 }
 
 model MappoolInRound {
@@ -243,7 +245,6 @@ model Mappool {
   description String?
   map_in_pools MapInPool[]
   maps      Map[]
-  global    Boolean         @default(false)
   public    Boolean         @default(false)
   qualifier QualifierRound?
 

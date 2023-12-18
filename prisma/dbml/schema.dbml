@@ -203,6 +203,7 @@ Table Round {
   id Int [pk, increment]
   acronym String [not null]
   name String [not null]
+  is_qualifier Boolean [not null, default: false]
   bans Int [not null]
   best_of Int [not null]
   delete_warning String
@@ -230,7 +231,6 @@ Table Mappool {
   description String
   map_in_pools MapInPool [not null]
   maps Map [not null]
-  global Boolean [not null, default: false]
   public Boolean [not null, default: false]
   qualifier QualifierRound
   mappools_in_rounds MappoolInRound [not null]
