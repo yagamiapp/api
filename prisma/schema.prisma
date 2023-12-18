@@ -246,7 +246,6 @@ model Mappool {
   map_in_pools MapInPool[]
   maps      Map[]
   public    Boolean         @default(false)
-  qualifier QualifierRound?
 
   mappools_in_rounds MappoolInRound[]
   rounds    Round[]
@@ -419,12 +418,6 @@ model MapInMatch {
   won_by_id Int?
 
   @@id([map_identifier, match_id])
-}
-
-model QualifierRound {
-  id         Int     @id @default(autoincrement())
-  mappool    Mappool @relation(fields: [mappool_id], references: [id])
-  mappool_id Int     @unique
 }
 
 model QualifierMatch {

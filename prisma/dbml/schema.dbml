@@ -232,7 +232,6 @@ Table Mappool {
   map_in_pools MapInPool [not null]
   maps Map [not null]
   public Boolean [not null, default: false]
-  qualifier QualifierRound
   mappools_in_rounds MappoolInRound [not null]
   rounds Round [not null]
 }
@@ -399,12 +398,6 @@ Table MapInMatch {
   }
 }
 
-Table QualifierRound {
-  id Int [pk, increment]
-  mappool Mappool [not null]
-  mappool_id Int [unique, not null]
-}
-
 Table QualifierMatch {
   id Int [pk, increment]
   teams TeamInQualifierMatch [not null]
@@ -513,8 +506,6 @@ Ref: MapInMatch.(match_id, banned_by_id) > TeamInMatch.(match_id, team_id)
 Ref: MapInMatch.(match_id, picked_by_id) > TeamInMatch.(match_id, team_id)
 
 Ref: MapInMatch.(match_id, won_by_id) > TeamInMatch.(match_id, team_id)
-
-Ref: QualifierRound.mappool_id - Mappool.id
 
 Ref: TeamInQualifierMatch.team_id > Team.id
 
