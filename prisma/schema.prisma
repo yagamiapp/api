@@ -63,6 +63,7 @@ model User {
   host_of          Tournament[]
   sessions         UserSession[]
   invites          TeamInvite[]
+  scores           Score[]
 }
 
 model DiscordAccount {
@@ -199,15 +200,15 @@ model ModMultiplier {
 }
 
 model Round {
-  id            Int        @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   acronym       String
   name          String
-  is_qualifier  Boolean    @default(false)
+  is_qualifier  Boolean        @default(false)
   matches       Match[]
-  tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  tournament    Tournament     @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   tournament_id Int
-  mappools          Mappool[]
-  RoundSettings     RoundSettings?
+  mappools      Mappool[]
+  settings      RoundSettings?
 }
 
 // A model that holds the rounds's settings required to run a match.
@@ -233,8 +234,8 @@ model Mappool {
   map_in_pools MapInPool[]
   public       Boolean     @default(false)
 
-  rounds             Round[]
-  in_matches         MappoolInMatch[]
+  rounds     Round[]
+  in_matches MappoolInMatch[]
 }
 
 model TeamInvite {
@@ -336,6 +337,7 @@ model Team {
   in_matches           TeamInMatch[]
   in_qualifier_matches TeamInQualifierMatch[]
   invited_users        TeamInvite[]
+  scores               TeamScore[]
 }
 
 model UserInTeam {
@@ -395,6 +397,9 @@ model MapInMatch {
   map_identifier String
   pool_id        Int
 
+  scores      Score[]
+  team_scores TeamScore[]
+
   protected_by    TeamInMatch? @relation(fields: [match_id, protected_by_id], references: [match_id, team_id], name: "protected")
   protected_by_id Int?
 
@@ -409,7 +414,36 @@ model MapInMatch {
   won_by    TeamInMatch? @relation(fields: [match_id, won_by_id], references: [match_id, team_id], name: "won")
   won_by_id Int?
 
+  qualifier    QualifierMatch? @relation(fields: [qualifier_id], references: [id])
+  qualifier_id Int?
+
   @@id([map_identifier, match_id])
+}
+
+model Score {
+  id Int @id @default(autoincrement())
+
+  score Float
+
+  map            MapInMatch @relation(fields: [map_identifier, match_id], references: [map_identifier, match_id])
+  map_identifier String
+  match_id       Int
+
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+model TeamScore {
+  id Int @id @default(autoincrement())
+
+  score Float
+
+  map            MapInMatch @relation(fields: [map_identifier, match_id], references: [map_identifier, match_id])
+  map_identifier String
+  match_id       Int
+
+  team    Team @relation(fields: [team_id], references: [id])
+  team_id Int
 }
 
 model MappoolInMatch {
@@ -425,6 +459,8 @@ model QualifierMatch {
   id        Int                    @id @default(autoincrement())
   teams     TeamInQualifierMatch[]
   map_index Int                    @default(0)
+
+  map_list MapInMatch[]
 }
 
 model TeamInQualifierMatch {
