@@ -26,33 +26,29 @@ model OsuBadge {
   description      String
   image_url        String
   url              String
-  users_with_badge UserWithOsuBadge[]
+  users            User[]
 }
 
 model UserWithOsuBadge {
   user_id  Int
   badge_id Int
-  user     User     @relation(fields: [user_id], references: [id])
-  badge    OsuBadge @relation(fields: [badge_id], references: [id])
 
   @@id([user_id, badge_id])
 }
 
-model CustomBadge {
+model UserTitle {
   id               Int                   @id @default(autoincrement())
   awarded_at       DateTime
   name             String
   description      String
   image_url        String
   url              String
-  users_with_badge UserWithCustomBadge[]
+  users            User[]
 }
 
-model UserWithCustomBadge {
+model UserWithUserTitle {
   user_id  Int
   badge_id Int
-  user     User        @relation(fields: [user_id], references: [id])
-  badge    CustomBadge @relation(fields: [badge_id], references: [id])
 
   @@id([user_id, badge_id])
 }
@@ -60,8 +56,6 @@ model UserWithCustomBadge {
 model UsersHostingTournament {
   user_id       Int
   tournament_id Int
-  user          User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
 
   @@id([user_id, tournament_id])
 }
@@ -85,9 +79,9 @@ model User {
   discord_accounts DiscordAccount[]
   twitch_accounts  TwitchAccount[]
   in_teams         UserInTeam[]
-  osu_badges       UserWithOsuBadge[]
-  badges           UserWithCustomBadge[]
-  host_of          UsersHostingTournament[]
+  osu_badges       OsuBadge[]
+  titles           UserTitle[]
+  host_of          Tournament[]
   sessions         UserSession[]
   invites          TeamInvite[]
 }
@@ -200,7 +194,7 @@ model Tournament {
   twitch_account_id Int?
   twitch_channel    TwitchAccount?           @relation(fields: [twitch_account_id], references: [id])
   mod_multipliers   ModMultiplier[]
-  hosts             UsersHostingTournament[]
+  hosts             User[]
 }
 
 model ModMultiplier {

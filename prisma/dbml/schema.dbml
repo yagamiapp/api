@@ -13,35 +13,31 @@ Table OsuBadge {
   description String [not null]
   image_url String [not null]
   url String [not null]
-  users_with_badge UserWithOsuBadge [not null]
+  users User [not null]
 }
 
 Table UserWithOsuBadge {
   user_id Int [not null]
   badge_id Int [not null]
-  user User [not null]
-  badge OsuBadge [not null]
 
   indexes {
     (user_id, badge_id) [pk]
   }
 }
 
-Table CustomBadge {
+Table UserTitle {
   id Int [pk, increment]
   awarded_at DateTime [not null]
   name String [not null]
   description String [not null]
   image_url String [not null]
   url String [not null]
-  users_with_badge UserWithCustomBadge [not null]
+  users User [not null]
 }
 
-Table UserWithCustomBadge {
+Table UserWithUserTitle {
   user_id Int [not null]
   badge_id Int [not null]
-  user User [not null]
-  badge CustomBadge [not null]
 
   indexes {
     (user_id, badge_id) [pk]
@@ -51,8 +47,6 @@ Table UserWithCustomBadge {
 Table UsersHostingTournament {
   user_id Int [not null]
   tournament_id Int [not null]
-  user User [not null]
-  tournament Tournament [not null]
 
   indexes {
     (user_id, tournament_id) [pk]
@@ -77,9 +71,9 @@ Table User {
   discord_accounts DiscordAccount [not null]
   twitch_accounts TwitchAccount [not null]
   in_teams UserInTeam [not null]
-  osu_badges UserWithOsuBadge [not null]
-  badges UserWithCustomBadge [not null]
-  host_of UsersHostingTournament [not null]
+  osu_badges OsuBadge [not null]
+  titles UserTitle [not null]
+  host_of Tournament [not null]
   sessions UserSession [not null]
   invites TeamInvite [not null]
 }
@@ -186,7 +180,7 @@ Table Tournament {
   twitch_account_id Int
   twitch_channel TwitchAccount
   mod_multipliers ModMultiplier [not null]
-  hosts UsersHostingTournament [not null]
+  hosts User [not null]
 }
 
 Table ModMultiplier {
@@ -413,18 +407,6 @@ Table TeamInQualifierMatch {
     (team_id, match_id) [pk]
   }
 }
-
-Ref: UserWithOsuBadge.user_id > User.id
-
-Ref: UserWithOsuBadge.badge_id > OsuBadge.id
-
-Ref: UserWithCustomBadge.user_id > User.id
-
-Ref: UserWithCustomBadge.badge_id > CustomBadge.id
-
-Ref: UsersHostingTournament.user_id > User.id [delete: Cascade]
-
-Ref: UsersHostingTournament.tournament_id > Tournament.id [delete: Cascade]
 
 Ref: DiscordAccount.osu_id > User.id
 
