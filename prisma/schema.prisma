@@ -174,19 +174,11 @@ model Tournament {
   color               String
   banner_url          String
   description         String
-  force_nf            Boolean
   icon_url            String
-  score_mode          Int
-  team_mode           Int
-  team_size           Int
-  x_v_x_mode          Int
   allow_registrations Boolean
   rounds              Round[]
   guild               Guild?  @relation(fields: [guild_id], references: [guild_id])
   guild_id            String?
-  fm_mods             Int     @default(1) // How many mods are required for freemod picks
-  double_pick         Int     @default(1) // 0: No double picking; 1: Only double picking NM; 2 Double picking allowed
-  double_ban          Int     @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
   private             Boolean @default(false)
   teams               Team[]
 
