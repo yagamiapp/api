@@ -191,9 +191,31 @@ model Tournament {
   teams               Team[]
 
   twitch_account_id Int?
-  twitch_channel    TwitchAccount?  @relation(fields: [twitch_account_id], references: [id])
+  twitch_channel    TwitchAccount?      @relation(fields: [twitch_account_id], references: [id])
   mod_multipliers   ModMultiplier[]
   hosts             User[]
+  settings          TournamentSettings?
+}
+
+// A model that holds the tournament's settings required to run a match.
+// These settings exist inside it's own model so that a match can
+// be run without instantiating a full tournament object.
+model TournamentSettings {
+  id Int @id @default(autoincrement())
+
+  force_nf    Boolean
+  score_mode  Int
+  team_mode   Int
+  team_size   Int
+  x_v_x_mode  Int
+  fm_mods     Int     @default(1) // How many mods are required for freemod picks
+  double_pick Int     @default(1) // 0: No double picking; 1: Only double picking NM; 2 Double picking allowed
+  double_ban  Int     @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
+
+  for_tournament Tournament? @relation(fields: [tournament_id], references: [id])
+  tournament_id  Int         @unique
+  for_match      Match?      @relation(fields: [match_id], references: [id])
+  match_id       Int         @unique
 }
 
 model ModMultiplier {
@@ -210,14 +232,29 @@ model Round {
   acronym       String
   name          String
   is_qualifier  Boolean    @default(false)
-  bans          Int
-  best_of       Int
   matches       Match[]
   tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   tournament_id Int
 
   mappool_in_rounds MappoolInRound[]
   mappools          Mappool[]
+  RoundSettings     RoundSettings?
+}
+
+// A model that holds the rounds's settings required to run a match.
+// These settings exist inside it's own model so that a match can
+// be run without instantiating a full tournament object.
+model RoundSettings {
+  id Int @id @default(autoincrement())
+
+  bans     Int
+  best_of  Int
+  protects Int
+
+  for_round Round? @relation(fields: [round_id], references: [id])
+  round_id  Int?   @unique
+  for_match Match? @relation(fields: [match_id], references: [id])
+  match_id  Int?   @unique
 }
 
 model MappoolInRound {
@@ -239,6 +276,7 @@ model Mappool {
 
   mappools_in_rounds MappoolInRound[]
   rounds             Round[]
+  in_matches         MappoolInMatch[]
 }
 
 model TeamInvite {
@@ -354,26 +392,22 @@ model UserInTeam {
 }
 
 model Match {
-  id          Int            @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   teams       TeamInMatch[]
   start_time  DateTime?
   message_id  String?
   channel_id  String?
   mp_link     String?
   waiting_on  Int? // Index of team in teams array
-  round       Round?         @relation(fields: [round_id], references: [id])
+  round       Round?        @relation(fields: [round_id], references: [id])
   round_id    Int?
-  settings    ScrimSettings?
   map_history MapInMatch[]
   state       Int
-  scrim       Boolean        @default(false)
-}
 
-model ScrimSettings {
-  match_id Int   @id
-  match    Match @relation(fields: [match_id], references: [id])
-  bans     Int
-  best_of  Int
+  scrim               Boolean             @default(false)
+  tournament_settings TournamentSettings?
+  round_settings      RoundSettings?
+  mappools            MappoolInMatch[]
 }
 
 model TeamInMatch {
@@ -391,6 +425,7 @@ model TeamInMatch {
   bans       MapInMatch[] @relation("banned")
   wins       MapInMatch[] @relation("won")
   picks      MapInMatch[] @relation("picked")
+  protects   MapInMatch[] @relation("protected")
   winner     Boolean?
 
   @@id([team_id, match_id])
@@ -402,6 +437,9 @@ model MapInMatch {
   match_id       Int
   map_identifier String
   pool_id        Int
+
+  protected_by    TeamInMatch? @relation(fields: [match_id, protected_by_id], references: [match_id, team_id], name: "protected")
+  protected_by_id Int?
 
   banned_by    TeamInMatch? @relation(fields: [match_id, banned_by_id], references: [match_id, team_id], name: "banned")
   banned_by_id Int?
@@ -415,6 +453,15 @@ model MapInMatch {
   won_by_id Int?
 
   @@id([map_identifier, match_id])
+}
+
+model MappoolInMatch {
+  mappool    Mappool @relation(fields: [mappool_id], references: [id])
+  match      Match   @relation(fields: [match_id], references: [id])
+  mappool_id Int
+  match_id   Int
+
+  @@id([mappool_id, match_id])
 }
 
 model QualifierMatch {
