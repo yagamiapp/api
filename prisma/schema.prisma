@@ -21,12 +21,12 @@ model Global {
 }
 
 model OsuBadge {
-  id               Int                @id @default(autoincrement())
-  awarded_at       DateTime
-  description      String
-  image_url        String
-  url              String
-  users            User[]
+  id          Int      @id @default(autoincrement())
+  awarded_at  DateTime
+  description String
+  image_url   String
+  url         String
+  users       User[]
 }
 
 model UserWithOsuBadge {
@@ -37,13 +37,13 @@ model UserWithOsuBadge {
 }
 
 model UserTitle {
-  id               Int                   @id @default(autoincrement())
-  awarded_at       DateTime
-  name             String
-  description      String
-  image_url        String
-  url              String
-  users            User[]
+  id          Int      @id @default(autoincrement())
+  awarded_at  DateTime
+  name        String
+  description String
+  image_url   String
+  url         String
+  users       User[]
 }
 
 model UserWithUserTitle {
@@ -168,7 +168,7 @@ model Guild {
 }
 
 model Tournament {
-  id                  Int      @id @default(autoincrement())
+  id                  Int     @id @default(autoincrement())
   acronym             String
   name                String
   color               String
@@ -182,17 +182,16 @@ model Tournament {
   x_v_x_mode          Int
   allow_registrations Boolean
   rounds              Round[]
-  guild               Guild?   @relation(fields: [guild_id], references: [guild_id])
+  guild               Guild?  @relation(fields: [guild_id], references: [guild_id])
   guild_id            String?
-  delete_warning      Boolean?
-  fm_mods             Int      @default(1) // How many mods are required for freemod picks
-  double_pick         Int      @default(1) // 0: No double picking; 1: Only double picking NM; 2 Double picking allowed
-  double_ban          Int      @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
-  private             Boolean  @default(false)
+  fm_mods             Int     @default(1) // How many mods are required for freemod picks
+  double_pick         Int     @default(1) // 0: No double picking; 1: Only double picking NM; 2 Double picking allowed
+  double_ban          Int     @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
+  private             Boolean @default(false)
   teams               Team[]
 
   twitch_account_id Int?
-  twitch_channel    TwitchAccount?           @relation(fields: [twitch_account_id], references: [id])
+  twitch_channel    TwitchAccount?  @relation(fields: [twitch_account_id], references: [id])
   mod_multipliers   ModMultiplier[]
   hosts             User[]
 }
@@ -207,41 +206,39 @@ model ModMultiplier {
 }
 
 model Round {
-  id             Int        @id @default(autoincrement())
-  acronym        String
-  name           String
-  is_qualifier   Boolean    @default(false)
-  bans           Int
-  best_of        Int
-  delete_warning String?
-  matches        Match[]
-  tournament     Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
-  tournament_id  Int
+  id            Int        @id @default(autoincrement())
+  acronym       String
+  name          String
+  is_qualifier  Boolean    @default(false)
+  bans          Int
+  best_of       Int
+  matches       Match[]
+  tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  tournament_id Int
 
   mappool_in_rounds MappoolInRound[]
-  mappools       Mappool[]
-
+  mappools          Mappool[]
 }
 
 model MappoolInRound {
-  round     Round           @relation(fields: [round_id], references: [id], onDelete: Cascade)
-  round_id  Int
-  mappool   Mappool         @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
+  round      Round   @relation(fields: [round_id], references: [id], onDelete: Cascade)
+  round_id   Int
+  mappool    Mappool @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
   mappool_id Int
 
   @@id([round_id, mappool_id])
 }
 
 model Mappool {
-  id        Int             @id @default(autoincrement())
-  name      String
-  description String?
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String?
   map_in_pools MapInPool[]
-  maps      Map[]
-  public    Boolean         @default(false)
+  maps         Map[]
+  public       Boolean     @default(false)
 
   mappools_in_rounds MappoolInRound[]
-  rounds    Round[]
+  rounds             Round[]
 }
 
 model TeamInvite {
@@ -270,7 +267,7 @@ model MapInPool {
 // osu!standard only
 model Map {
   // Beatmap attributes
-  id                  Int         @id
+  id                  Int    @id
   beatmapset_id       Int
   star_rating         Float //'difficulty_rating'
   status              String
@@ -280,48 +277,48 @@ model Map {
   max_combo           Int
 
   // BeatmapDifficultyAttributes attributes
-  aim_difficulty      Float
-  approach_rate       Float
+  aim_difficulty        Float
+  approach_rate         Float
   flashlight_difficulty Float
-  overall_difficulty  Float
-  slider_factor       Float
-  speed_difficulty    Float
+  overall_difficulty    Float
+  slider_factor         Float
+  speed_difficulty      Float
 
   // BeatmapExtended attributes
-  bpm                 Float
-  count_circles       Int
-  count_sliders       Int
-  count_spinners      Int
-  circle_size         Float //'cs', changed it to be consistent with the other attributes
-  hp_drain            Float //'drain'
-  hit_length          Int //same as drain time (I think??)
-  last_updated        DateTime
-  url                 String
+  bpm            Float
+  count_circles  Int
+  count_sliders  Int
+  count_spinners Int
+  circle_size    Float //'cs', changed it to be consistent with the other attributes
+  hp_drain       Float //'drain'
+  hit_length     Int //same as drain time (I think??)
+  last_updated   DateTime
+  url            String
 
   // Beatmapset attributes
-  artist              String
-  artist_unicode      String
-  cover_url           String //Cover art: 'cover.cover'
-  cover_2x_url        String //'cover.cover@2x'
-  card_url            String //'cover.card'
-  card_2x_url         String //'cover.card@2x'
-  list_url            String //'cover.list'
-  list_2x_url         String //'cover.list@2x'
-  slim_cover_url      String //'cover.slimcover'
-  slim_cover_2x_url   String //'cover.slimcover@2x'
-  preview_url         String //the song preview
-  title               String
-  title_unicode       String
-  set_mapper_user_id  Int //'user_id'
+  artist             String
+  artist_unicode     String
+  cover_url          String //Cover art: 'cover.cover'
+  cover_2x_url       String //'cover.cover@2x'
+  card_url           String //'cover.card'
+  card_2x_url        String //'cover.card@2x'
+  list_url           String //'cover.list'
+  list_2x_url        String //'cover.list@2x'
+  slim_cover_url     String //'cover.slimcover'
+  slim_cover_2x_url  String //'cover.slimcover@2x'
+  preview_url        String //the song preview
+  title              String
+  title_unicode      String
+  set_mapper_user_id Int //'user_id'
 
   // BeatmapsetExtended attributes
-  available           Boolean
+  available Boolean
   // ^ true if 'availability.download_disabled' is false and 'deleted_at' is null
 
   // Other
-  fetch_time          DateTime    @default(now())
-  in_pools            MapInPool[]
-  mappools            Mappool[]
+  fetch_time DateTime    @default(now())
+  in_pools   MapInPool[]
+  mappools   Mappool[]
 }
 
 model Team {
@@ -339,12 +336,11 @@ model Team {
 }
 
 model UserInTeam {
-  osu_id         Int
-  user           User     @relation(fields: [osu_id], references: [id])
-  team           Team     @relation(fields: [team_id], references: [id], onDelete: Cascade)
-  team_id        Int
-  member_order   Int      @default(0)
-  delete_warning Boolean?
+  osu_id       Int
+  user         User @relation(fields: [osu_id], references: [id])
+  team         Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
+  team_id      Int
+  member_order Int  @default(0)
 
   @@id([osu_id, team_id])
 }
