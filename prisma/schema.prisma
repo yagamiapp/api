@@ -256,6 +256,7 @@ model MapInPool {
   data         Map?         @relation(fields: [map_id], references: [id])
   map_id       Int?
   mod_priority Int          @default(0)
+  map_order    Int?
   mappool      Mappool      @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
   mappool_id   Int
   in_matches   MapInMatch[]
