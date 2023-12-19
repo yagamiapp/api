@@ -77,7 +77,6 @@ Table User {
   discord_accounts DiscordAccount [not null]
   twitch_accounts TwitchAccount [not null]
   in_teams UserInTeam [not null]
-  ahr_owner_of AutoHostRotate
   osu_badges UserWithOsuBadge [not null]
   badges UserWithCustomBadge [not null]
   host_of UsersHostingTournament [not null]
@@ -415,30 +414,6 @@ Table TeamInQualifierMatch {
   }
 }
 
-Table AutoHostRotate {
-  owner User [not null]
-  osu_id Int [pk]
-  mp_link String [not null]
-  min_stars Float
-  max_stars Float
-  min_length Int
-  max_length Int
-  min_rank Int
-  max_rank Int
-  player_order AutoHostRotatePlayer [not null]
-  current_host AutoHostRotatePlayer
-  current_host_id Int [unique]
-}
-
-Table AutoHostRotatePlayer {
-  id Int [pk]
-  username String [not null]
-  rank Int [not null]
-  lobby_id Int [not null]
-  in_lobby AutoHostRotate [not null]
-  host_in AutoHostRotate
-}
-
 Ref: UserWithOsuBadge.user_id > User.id
 
 Ref: UserWithOsuBadge.badge_id > OsuBadge.id
@@ -510,9 +485,3 @@ Ref: MapInMatch.(match_id, won_by_id) > TeamInMatch.(match_id, team_id)
 Ref: TeamInQualifierMatch.team_id > Team.id
 
 Ref: TeamInQualifierMatch.match_id > QualifierMatch.id
-
-Ref: AutoHostRotate.osu_id - User.id
-
-Ref: AutoHostRotate.current_host_id - AutoHostRotatePlayer.id
-
-Ref: AutoHostRotatePlayer.lobby_id > AutoHostRotate.osu_id [delete: Cascade]

@@ -85,7 +85,6 @@ model User {
   discord_accounts DiscordAccount[]
   twitch_accounts  TwitchAccount[]
   in_teams         UserInTeam[]
-  ahr_owner_of     AutoHostRotate?
   osu_badges       UserWithOsuBadge[]
   badges           UserWithCustomBadge[]
   host_of          UsersHostingTournament[]
@@ -433,29 +432,4 @@ model TeamInQualifierMatch {
   match_id Int
 
   @@id([team_id, match_id])
-}
-
-model AutoHostRotate {
-  owner   User   @relation(fields: [osu_id], references: [id])
-  osu_id  Int    @id
-  mp_link String
-
-  min_stars       Float?
-  max_stars       Float?
-  min_length      Int?
-  max_length      Int?
-  min_rank        Int?
-  max_rank        Int?
-  player_order    AutoHostRotatePlayer[] @relation("queue")
-  current_host    AutoHostRotatePlayer?  @relation("current", fields: [current_host_id], references: [id])
-  current_host_id Int?                   @unique
-}
-
-model AutoHostRotatePlayer {
-  id       Int             @id
-  username String
-  rank     Int
-  lobby_id Int
-  in_lobby AutoHostRotate  @relation("queue", fields: [lobby_id], references: [osu_id], onDelete: Cascade)
-  host_in  AutoHostRotate? @relation("current")
 }
