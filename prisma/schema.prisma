@@ -336,6 +336,7 @@ model Team {
   tournament           Tournament             @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   tournament_id        Int
   scrim                Boolean                @default(false)
+  timezone             Int? // UTC Offset
   in_matches           TeamInMatch[]
   in_qualifier_matches TeamInQualifierMatch[]
   invited_users        TeamInvite[]
