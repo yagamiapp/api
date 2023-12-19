@@ -284,6 +284,12 @@ model Map {
   slider_factor         Float
   speed_difficulty      Float
 
+  // Mod star rating (only fetched and filled in when needed)
+  star_rating_dt Float?
+  star_rating_hr Float?
+  star_rating_ez Float?
+  star_rating_ht Float?
+
   // BeatmapExtended attributes
   bpm            Float
   count_circles  Int
