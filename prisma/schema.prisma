@@ -29,13 +29,6 @@ model OsuBadge {
   users       User[]
 }
 
-model UserWithOsuBadge {
-  user_id  Int
-  badge_id Int
-
-  @@id([user_id, badge_id])
-}
-
 model UserTitle {
   id          Int      @id @default(autoincrement())
   awarded_at  DateTime
@@ -44,20 +37,6 @@ model UserTitle {
   image_url   String
   url         String
   users       User[]
-}
-
-model UserWithUserTitle {
-  user_id  Int
-  badge_id Int
-
-  @@id([user_id, badge_id])
-}
-
-model UsersHostingTournament {
-  user_id       Int
-  tournament_id Int
-
-  @@id([user_id, tournament_id])
 }
 
 model User {
@@ -235,8 +214,6 @@ model Round {
   matches       Match[]
   tournament    Tournament @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   tournament_id Int
-
-  mappool_in_rounds MappoolInRound[]
   mappools          Mappool[]
   RoundSettings     RoundSettings?
 }
@@ -257,24 +234,13 @@ model RoundSettings {
   match_id  Int?   @unique
 }
 
-model MappoolInRound {
-  round      Round   @relation(fields: [round_id], references: [id], onDelete: Cascade)
-  round_id   Int
-  mappool    Mappool @relation(fields: [mappool_id], references: [id], onDelete: Cascade)
-  mappool_id Int
-
-  @@id([round_id, mappool_id])
-}
-
 model Mappool {
   id           Int         @id @default(autoincrement())
   name         String
   description  String?
   map_in_pools MapInPool[]
-  maps         Map[]
   public       Boolean     @default(false)
 
-  mappools_in_rounds MappoolInRound[]
   rounds             Round[]
   in_matches         MappoolInMatch[]
 }
@@ -363,7 +329,6 @@ model Map {
   // Other
   fetch_time DateTime    @default(now())
   in_pools   MapInPool[]
-  mappools   Mappool[]
 }
 
 model Team {
