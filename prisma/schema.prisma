@@ -424,6 +424,7 @@ model Score {
   id Int @id @default(autoincrement())
 
   score Float
+  mods  String @default("")
 
   map            MapInMatch @relation(fields: [map_identifier, match_id], references: [map_identifier, match_id])
   map_identifier String
@@ -431,12 +432,16 @@ model Score {
 
   user    User @relation(fields: [user_id], references: [id])
   user_id Int
+
+  scores_for    TeamScore? @relation(fields: [team_score_id], references: [id])
+  team_score_id Int?
 }
 
 model TeamScore {
   id Int @id @default(autoincrement())
 
-  score Float
+  score   Float
+  freemod Boolean @default(false)
 
   map            MapInMatch @relation(fields: [map_identifier, match_id], references: [map_identifier, match_id])
   map_identifier String
@@ -444,6 +449,8 @@ model TeamScore {
 
   team    Team @relation(fields: [team_id], references: [id])
   team_id Int
+
+  player_scores Score[]
 }
 
 model MappoolInMatch {
