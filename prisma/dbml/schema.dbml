@@ -1,0 +1,511 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Global {
+  id Int [pk, increment]
+  ties Int [not null, default: 0]
+}
+
+Table OsuBadge {
+  id Int [pk, increment]
+  awarded_at DateTime [not null]
+  description String [not null]
+  image_url String [not null]
+  url String [not null]
+  users User [not null]
+}
+
+Table UserTitle {
+  id Int [pk, increment]
+  awarded_at DateTime [not null]
+  name String [not null]
+  description String [not null]
+  image_url String [not null]
+  url String [not null]
+  users User [not null]
+}
+
+Table User {
+  id Int [pk]
+  username String [not null]
+  country_code String [not null]
+  country_name String [not null]
+  cover_url String [not null]
+  ranked_score BigInt [not null]
+  play_count Int [not null]
+  total_score BigInt [not null]
+  pp_rank Int [not null]
+  level Int [not null]
+  level_progress Int [not null]
+  hit_accuracy Float [not null]
+  pp Float [not null]
+  osu_token OsuOauth
+  discord_accounts DiscordAccount [not null]
+  twitch_accounts TwitchAccount [not null]
+  in_teams UserInTeam [not null]
+  osu_badges OsuBadge [not null]
+  titles UserTitle [not null]
+  host_of Tournament [not null]
+  sessions UserSession [not null]
+  invites TeamInvite [not null]
+  scores Score [not null]
+}
+
+Table DiscordAccount {
+  user User [not null]
+  osu_id Int [not null]
+  id String [pk]
+  avatar String [not null]
+  discriminator String [not null]
+  flags Int [not null]
+  username String [not null]
+  token DiscordOauth
+}
+
+Table TwitchAccount {
+  user User [not null]
+  osu_id Int [not null]
+  id Int [pk]
+  username String [not null]
+  requests_enabled Boolean [not null, default: false]
+  req_require_live Boolean [not null, default: false]
+  req_require_category Boolean [not null, default: false]
+  tournaments Tournament [not null]
+  token TwitchOauth
+}
+
+Table OsuOauth {
+  user_id Int [pk]
+  last_update DateTime [default: `now()`, not null]
+  access_token String [not null]
+  expires_in Int [not null]
+  refresh_token String [not null]
+  token_type String [not null]
+  user User [not null]
+}
+
+Table DiscordOauth {
+  user_id String [pk]
+  last_update DateTime [default: `now()`, not null]
+  access_token String [not null]
+  expires_in Int [not null]
+  refresh_token String [not null]
+  token_type String [not null]
+  scope String [not null]
+  user DiscordAccount [not null]
+}
+
+Table TwitchOauth {
+  user_id Int [pk]
+  last_update DateTime [default: `now()`, not null]
+  access_token String [not null]
+  expires_at BigInt [not null]
+  refresh_token String [not null]
+  token_type String [not null]
+  user TwitchAccount [not null]
+}
+
+Table UserSession {
+  id String [pk]
+  user User [not null]
+  osu_id Int [not null]
+  created_at DateTime [default: `now()`, not null]
+  last_used DateTime [default: `now()`, not null]
+  device String
+  browser String
+  os String
+}
+
+Table Guild {
+  guild_id String [pk]
+  change_nickname Boolean [not null]
+  linked_role String
+  player_role String
+  match_results_channel String
+  manager_admin_disabled Boolean [not null, default: false]
+  tournaments Tournament [not null]
+  active_tournament Int
+}
+
+Table Tournament {
+  id Int [pk, increment]
+  acronym String [not null]
+  name String [not null]
+  color String [not null]
+  banner_url String [not null]
+  description String [not null]
+  icon_url String [not null]
+  allow_registrations Boolean [not null]
+  rounds Round [not null]
+  guild Guild
+  guild_id String
+  private Boolean [not null, default: false]
+  teams Team [not null]
+  twitch_account_id Int
+  twitch_channel TwitchAccount
+  mod_multipliers ModMultiplier [not null]
+  hosts User [not null]
+  settings TournamentSettings
+}
+
+Table TournamentSettings {
+  id Int [pk, increment]
+  force_nf Boolean [not null]
+  score_mode Int [not null]
+  team_mode Int [not null]
+  team_size Int [not null]
+  x_v_x_mode Int [not null]
+  fm_mods Int [not null, default: 1]
+  double_pick Int [not null, default: 1]
+  double_ban Int [not null, default: 1]
+  for_tournament Tournament
+  tournament_id Int [unique]
+  for_match Match
+  match_id Int [unique]
+}
+
+Table ModMultiplier {
+  id Int [pk, increment]
+  tournament Tournament [not null]
+  tournament_id Int [not null]
+  mod_string String [not null]
+  match_exactly Boolean [not null, default: false]
+  multiplier Float [not null]
+}
+
+Table Round {
+  id Int [pk, increment]
+  acronym String [not null]
+  name String [not null]
+  is_qualifier Boolean [not null, default: false]
+  matches Match [not null]
+  tournament Tournament [not null]
+  tournament_id Int [not null]
+  mappools Mappool [not null]
+  settings RoundSettings
+}
+
+Table RoundSettings {
+  id Int [pk, increment]
+  bans Int [not null]
+  best_of Int [not null]
+  protects Int [not null]
+  for_round Round
+  round_id Int [unique]
+  for_match Match
+  match_id Int [unique]
+}
+
+Table Mappool {
+  id Int [pk, increment]
+  name String [not null]
+  description String
+  map_in_pools MapInPool [not null]
+  public Boolean [not null, default: false]
+  rounds Round [not null]
+  in_matches MappoolInMatch [not null]
+}
+
+Table TeamInvite {
+  invitee_user_id Int [not null]
+  invitee User [not null]
+  team_id Int [not null]
+  team Team [not null]
+
+  indexes {
+    (invitee_user_id, team_id) [pk]
+  }
+}
+
+Table MapInPool {
+  identifier String [not null]
+  mods String [not null]
+  data Map
+  map_id Int
+  mod_priority Int [not null, default: 0]
+  map_order Int
+  mappool Mappool [not null]
+  mappool_id Int [not null]
+  in_matches MapInMatch [not null]
+
+  indexes {
+    (identifier, mappool_id) [pk]
+  }
+}
+
+Table Map {
+  id Int [pk]
+  beatmapset_id Int [not null]
+  star_rating Float [not null]
+  status String [not null]
+  total_length Int [not null]
+  diff_mapper_user_id Int [not null]
+  difficulty_name String [not null]
+  max_combo Int [not null]
+  aim_difficulty Float [not null]
+  approach_rate Float [not null]
+  flashlight_difficulty Float [not null]
+  overall_difficulty Float [not null]
+  slider_factor Float [not null]
+  speed_difficulty Float [not null]
+  star_rating_dt Float
+  star_rating_hr Float
+  star_rating_ez Float
+  star_rating_ht Float
+  bpm Float [not null]
+  count_circles Int [not null]
+  count_sliders Int [not null]
+  count_spinners Int [not null]
+  circle_size Float [not null]
+  hp_drain Float [not null]
+  hit_length Int [not null]
+  last_updated DateTime [not null]
+  url String [not null]
+  artist String [not null]
+  artist_unicode String [not null]
+  cover_url String [not null]
+  cover_2x_url String [not null]
+  card_url String [not null]
+  card_2x_url String [not null]
+  list_url String [not null]
+  list_2x_url String [not null]
+  slim_cover_url String [not null]
+  slim_cover_2x_url String [not null]
+  preview_url String [not null]
+  title String [not null]
+  title_unicode String [not null]
+  set_mapper_user_id Int [not null]
+  available Boolean [not null]
+  fetch_time DateTime [default: `now()`, not null]
+  in_pools MapInPool [not null]
+}
+
+Table Team {
+  id Int [pk, increment]
+  name String [not null]
+  icon_url String [not null]
+  color String [not null]
+  members UserInTeam [not null]
+  tournament Tournament [not null]
+  tournament_id Int [not null]
+  scrim Boolean [not null, default: false]
+  timezone Int
+  in_matches TeamInMatch [not null]
+  in_qualifier_matches TeamInQualifierMatch [not null]
+  invited_users TeamInvite [not null]
+  scores TeamScore [not null]
+}
+
+Table UserInTeam {
+  osu_id Int [not null]
+  user User [not null]
+  team Team [not null]
+  team_id Int [not null]
+  member_order Int [not null, default: 0]
+
+  indexes {
+    (osu_id, team_id) [pk]
+  }
+}
+
+Table Match {
+  id Int [pk, increment]
+  teams TeamInMatch [not null]
+  start_time DateTime
+  message_id String
+  channel_id String
+  mp_link String
+  waiting_on Int
+  round Round
+  round_id Int
+  map_history MapInMatch [not null]
+  state Int [not null]
+  scrim Boolean [not null, default: false]
+  tournament_settings TournamentSettings
+  round_settings RoundSettings
+  mappools MappoolInMatch [not null]
+}
+
+Table TeamInMatch {
+  match_id Int [not null]
+  team_id Int [not null]
+  match Match [not null]
+  team Team [not null]
+  score Int [not null]
+  roll Int
+  pick_order Int
+  ban_order Int
+  aborts Int [not null, default: 0]
+  faults Int [not null, default: 0]
+  warmed_up Boolean [not null, default: false]
+  bans MapInMatch [not null]
+  wins MapInMatch [not null]
+  picks MapInMatch [not null]
+  protects MapInMatch [not null]
+  winner Boolean
+
+  indexes {
+    (team_id, match_id) [pk]
+  }
+}
+
+Table MapInMatch {
+  map MapInPool [not null]
+  match Match [not null]
+  match_id Int [not null]
+  map_identifier String [not null]
+  pool_id Int [not null]
+  scores Score [not null]
+  team_scores TeamScore [not null]
+  protected_by TeamInMatch
+  protected_by_id Int
+  banned_by TeamInMatch
+  banned_by_id Int
+  picked_by TeamInMatch
+  picked_by_id Int
+  pick_number Int
+  pick_team_number Int
+  won_by TeamInMatch
+  won_by_id Int
+  qualifier QualifierMatch
+  qualifier_id Int
+
+  indexes {
+    (map_identifier, match_id) [pk]
+  }
+}
+
+Table Score {
+  id Int [pk, increment]
+  score Float [not null]
+  mods String [not null, default: '']
+  map MapInMatch [not null]
+  map_identifier String [not null]
+  match_id Int [not null]
+  user User [not null]
+  user_id Int [not null]
+  scores_for TeamScore
+  team_score_id Int
+}
+
+Table TeamScore {
+  id Int [pk, increment]
+  score Float [not null]
+  freemod Boolean [not null, default: false]
+  map MapInMatch [not null]
+  map_identifier String [not null]
+  match_id Int [not null]
+  team Team [not null]
+  team_id Int [not null]
+  player_scores Score [not null]
+}
+
+Table MappoolInMatch {
+  mappool Mappool [not null]
+  match Match [not null]
+  mappool_id Int [not null]
+  match_id Int [not null]
+
+  indexes {
+    (mappool_id, match_id) [pk]
+  }
+}
+
+Table QualifierMatch {
+  id Int [pk, increment]
+  teams TeamInQualifierMatch [not null]
+  map_index Int [not null, default: 0]
+  map_list MapInMatch [not null]
+}
+
+Table TeamInQualifierMatch {
+  team Team [not null]
+  team_id Int [not null]
+  match QualifierMatch [not null]
+  match_id Int [not null]
+
+  indexes {
+    (team_id, match_id) [pk]
+  }
+}
+
+Ref: DiscordAccount.osu_id > User.id
+
+Ref: TwitchAccount.osu_id > User.id
+
+Ref: OsuOauth.user_id - User.id
+
+Ref: DiscordOauth.user_id - DiscordAccount.id
+
+Ref: TwitchOauth.user_id - TwitchAccount.id
+
+Ref: UserSession.osu_id > User.id
+
+Ref: Tournament.guild_id > Guild.guild_id
+
+Ref: Tournament.twitch_account_id > TwitchAccount.id
+
+Ref: TournamentSettings.tournament_id - Tournament.id
+
+Ref: TournamentSettings.match_id - Match.id
+
+Ref: ModMultiplier.tournament_id > Tournament.id
+
+Ref: Round.tournament_id > Tournament.id [delete: Cascade]
+
+Ref: RoundSettings.round_id - Round.id
+
+Ref: RoundSettings.match_id - Match.id
+
+Ref: TeamInvite.invitee_user_id > User.id
+
+Ref: TeamInvite.team_id > Team.id [delete: Cascade]
+
+Ref: MapInPool.map_id > Map.id
+
+Ref: MapInPool.mappool_id > Mappool.id [delete: Cascade]
+
+Ref: Team.tournament_id > Tournament.id [delete: Cascade]
+
+Ref: UserInTeam.osu_id > User.id
+
+Ref: UserInTeam.team_id > Team.id [delete: Cascade]
+
+Ref: Match.round_id > Round.id
+
+Ref: TeamInMatch.match_id > Match.id [delete: Cascade]
+
+Ref: TeamInMatch.team_id > Team.id [delete: Cascade]
+
+Ref: MapInMatch.(map_identifier, pool_id) > MapInPool.(identifier, mappool_id) [delete: Cascade]
+
+Ref: MapInMatch.match_id > Match.id [delete: Cascade]
+
+Ref: MapInMatch.(match_id, protected_by_id) > TeamInMatch.(match_id, team_id)
+
+Ref: MapInMatch.(match_id, banned_by_id) > TeamInMatch.(match_id, team_id)
+
+Ref: MapInMatch.(match_id, picked_by_id) > TeamInMatch.(match_id, team_id)
+
+Ref: MapInMatch.(match_id, won_by_id) > TeamInMatch.(match_id, team_id)
+
+Ref: MapInMatch.qualifier_id > QualifierMatch.id
+
+Ref: Score.(map_identifier, match_id) > MapInMatch.(map_identifier, match_id)
+
+Ref: Score.user_id > User.id
+
+Ref: Score.team_score_id > TeamScore.id
+
+Ref: TeamScore.(map_identifier, match_id) > MapInMatch.(map_identifier, match_id)
+
+Ref: TeamScore.team_id > Team.id
+
+Ref: MappoolInMatch.mappool_id > Mappool.id
+
+Ref: MappoolInMatch.match_id > Match.id
+
+Ref: TeamInQualifierMatch.team_id > Team.id
+
+Ref: TeamInQualifierMatch.match_id > QualifierMatch.id
