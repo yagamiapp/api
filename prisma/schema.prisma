@@ -185,9 +185,9 @@ model TournamentSettings {
   double_ban  Int     @default(1) // 0: No double banning; 1: Only double banning NM; 2 Double banning allowed
 
   for_tournament Tournament? @relation(fields: [tournament_id], references: [id])
-  tournament_id  Int         @unique
+  tournament_id  Int?        @unique
   for_match      Match?      @relation(fields: [match_id], references: [id])
-  match_id       Int         @unique
+  match_id       Int?        @unique
 }
 
 model ModMultiplier {
